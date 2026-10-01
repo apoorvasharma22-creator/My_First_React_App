@@ -19,6 +19,6 @@ jobs:
       - name: List S3 Buckets
         env:
           AWS_REGION: ${{AWS_REGION}}
-        run: 
+        run: |
           echo: "Listing S3 Buckets"
           aws s3 ls
