@@ -7,29 +7,19 @@ on:
   workflow_dispatch:
 
 permissions:
-  id-token: write # This is required for requesting the JWT
-  contents: read # This is required for actions/checkout
+  id-token: write
+  contents: read
 
 jobs:
   listing_buckets:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checking the credentials
-        env:
-          AWS_REGION: ${{secrets.AWS_REGION}}
-        run: |
-          echo ${{secrets.IAM_ROLE}}
-          echo ${{secrets.AWS_REGION}}
 
+    steps:
       - name: Set Up AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{secrets.IAM_ROLE}}
-          aws-region: ${{secrets.AWS_REGION}}
+          role-to-assume: ${{ secrets.IAM_ROLE }}
+          aws-region: eu-north-1
 
       - name: List S3 Buckets
-        env:
-          AWS_REGION: ${{secrets.AWS_REGION}}
-        run: |
-          echo "Listing S3 Buckets"
-          aws s3 ls
+        run: aws s3 ls
