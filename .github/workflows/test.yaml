@@ -14,6 +14,11 @@ jobs:
   listing_buckets:
     runs-on: ubuntu-latest
     steps:
+      - name: Checking the credentials
+        run:
+          echo: ${{secrets.IAM_ROLE}}
+          echo: ${{secrets.AWS_REGION}}
+
       - name: Set Up AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
