@@ -18,7 +18,7 @@ jobs:
       - name: Set Up AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.IAM_ROLE }}
+          role-to-assume: "arn:aws:iam::357568621764:role/personalWebsite"
           aws-region: eu-north-1
 
       - name: List S3 Buckets
