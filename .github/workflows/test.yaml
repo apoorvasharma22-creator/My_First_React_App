@@ -1,4 +1,4 @@
-name: Listing Buckets
+name: Create a S3 Bucket
 
 on:
   push:
@@ -11,23 +11,11 @@ permissions:
   contents: read
 
 jobs:
-  listing_buckets:
+  creating_bucket:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check OIDC claims
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const token = await core.getIDToken('sts.amazonaws.com');
-            const claims = JSON.parse(
-              Buffer.from(token.split('.')[1], 'base64url').toString('utf8')
-            );
-            console.log(JSON.stringify({
-              sub: claims.sub,
-              aud: claims.aud,
-              ref: claims.ref
-            }, null, 2));
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Set Up AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -35,5 +23,23 @@ jobs:
           role-to-assume: "arn:aws:iam::357568621764:role/personlWebsite"
           aws-region: eu-north-1
 
-      - name: List S3 Buckets
-        run: aws s3 ls
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Initialize Terraform
+        run: terraform init
+        working-directory: terraform
+
+      - name: Terraform Plan
+        env:
+          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+        run: |
+          terraform plan \
+            -var="bucket_name=$BUCKET_NAME"
+        working-directory: terraform
+
+      - name: Terraform Apply
+        env:
+          TF_VAR_bucket_name: ${{ secrets.BUCKET_NAME }}
+        run: terraform apply -auto-approve
+        working-directory: terraform
